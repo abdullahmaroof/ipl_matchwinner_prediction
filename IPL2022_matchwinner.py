@@ -2,10 +2,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt 
 import seaborn as sns
-from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import accuracy_score
+from sklearn.tree import DecisionTreeRegressor
+from sklearn import metrics
 
 ipldata = pd.read_csv('IPL_Matches_2008_2021.csv')
 
@@ -18,9 +17,6 @@ iplnewdata=ipldata.drop(columns=['ID','MatchNumber','SuperOver','City','Date','S
 print(iplnewdata.info())
 
 iplnewdata=iplnewdata.dropna()
-
-print("Counting Match Number values in dataset")
-print(iplnewdata.MatchNumber.value_counts())
 
 print("Counting Team1 values in dataset")
 print(iplnewdata.Team1.value_counts())
@@ -99,45 +95,36 @@ X_train, X_test, Y_train, Y_test = train_test_split(X,Y, test_size = 0.2, strati
 
 print(X.shape, X_train.shape, X_test.shape)
 
-lin_reg_model = LinearRegression()
+lin_reg_model = DecisionTreeRegressor()
 
 lin_reg_model.fit(X_train, Y_train)
 
 X_train_prediction = lin_reg_model.predict(X_train)
-training_data_accuracy = accuracy_score(X_train_prediction, Y_train)
+error_score = metrics.r2_score(Y_train, X_train_prediction)
+print("R squared Error : ", error_score)
 
-print('Accuracy score of the training data : ', training_data_accuracy)
 
 
 X_test_prediction = lin_reg_model.predict(X_test)
-test_data_accuracy = accuracy_score(X_test_prediction, Y_test)
+test_data_accuracy = metrics.r2_score(X_test_prediction, Y_test)
 
 print('Accuracy score of the test data : ', test_data_accuracy)
 
-#
-# input_data = (22,1,3,12,3,0)
-#
-# # changing the input_data to numpy array
-# input_data_as_numpy_array = np.asarray(input_data)
-#
-# # reshape the array as we are predicting for one instance
-# input_data_reshaped = input_data_as_numpy_array.reshape(1,-1)
-#
-# # standardize the input data
-# std_data = scaler.transform(input_data_reshaped)
-# print(std_data)
-#
-# prediction = classifier.predict(std_data)
-# print(prediction)
-#
-# if (prediction[0] == 0):
-#   print('Team 1 Winner')
-# else:
-#   print('Team 2 Winner')
-#
-#
-# # In[ ]:
-#
-#
-#
-#
+
+input_data = (3,6,42,6,0)
+
+input_data_as_numpy_array = np.asarray(input_data)
+
+std_data = input_data_as_numpy_array.reshape(1,-1)
+
+print(std_data)
+
+prediction = lin_reg_model.predict(std_data)
+print(prediction)
+
+if (prediction[0]==0):
+    print('Team 1 Winner')
+    print(input_data[0])
+else:
+    print('Team 2 Winner')
+    print(input_data[1])
